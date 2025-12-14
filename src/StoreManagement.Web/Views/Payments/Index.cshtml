@@ -1,0 +1,53 @@
+@model StoreManagement.Web.Helpers.PaginatedList<StoreManagement.Data.Entities.Payment>
+@{ ViewData["Title"] = "Lịch sử thanh toán"; }
+
+<h1 class="h3 mb-4 text-gray-800">Lịch sử thanh toán</h1>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Mã GD</th>
+                    <th>Mã Đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Số tiền</th>
+                    <th>Phương thức</th>
+                    <th>Ngày thanh toán</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>#@item.PaymentId</td>
+                        <td>#@item.OrderId</td>
+                        <td>@(item.Order?.Customer?.Name ?? "Khách lẻ")</td>
+                        <td class="text-danger fw-bold">@item.Amount.ToString("N0") ₫</td>
+                        <td>
+                             @if(item.PaymentMethod?.ToLower() == "cash" || item.PaymentMethod?.ToLower() == "cod") { <span class="badge bg-success">Tiền mặt (COD)</span> }
+                             else if(item.PaymentMethod?.ToLower() == "card") { <span class="badge bg-primary">Thẻ</span> }
+                             else if(item.PaymentMethod?.ToLower() == "e-wallet") { <span class="badge bg-info">Ví điện tử</span> }
+                             else { <span class="badge bg-secondary">@item.PaymentMethod</span> }
+                        </td>
+                        <td>@item.PaymentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+         <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex - 1)">Trước</a>
+                </li>
+                <li class="page-item disabled"><span class="page-link">Trang @Model.PageIndex / @Model.TotalPages</span></li>
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex + 1)">Sau</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

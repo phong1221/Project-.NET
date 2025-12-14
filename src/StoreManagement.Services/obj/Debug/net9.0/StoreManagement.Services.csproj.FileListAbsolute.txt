@@ -1,0 +1,16 @@
+D:\StoreManagement\src\StoreManagement.Services\bin\Debug\net9.0\StoreManagement.Services.deps.json
+D:\StoreManagement\src\StoreManagement.Services\bin\Debug\net9.0\StoreManagement.Services.dll
+D:\StoreManagement\src\StoreManagement.Services\bin\Debug\net9.0\StoreManagement.Services.pdb
+D:\StoreManagement\src\StoreManagement.Services\bin\Debug\net9.0\StoreManagement.Data.dll
+D:\StoreManagement\src\StoreManagement.Services\bin\Debug\net9.0\StoreManagement.Data.pdb
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.csproj.AssemblyReference.cache
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.GeneratedMSBuildEditorConfig.editorconfig
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.AssemblyInfoInputs.cache
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.AssemblyInfo.cs
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.csproj.CoreCompileInputs.cache
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreMan.EF505BBD.Up2Date
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.dll
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\refint\StoreManagement.Services.dll
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.pdb
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\ref\StoreManagement.Services.dll
+D:\StoreManagement\src\StoreManagement.Services\obj\Debug\net9.0\StoreManagement.Services.sourcelink.json

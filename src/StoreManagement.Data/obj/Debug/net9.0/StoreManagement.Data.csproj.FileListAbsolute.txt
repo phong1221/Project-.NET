@@ -1,0 +1,13 @@
+D:\StoreManagement\src\StoreManagement.Data\bin\Debug\net9.0\StoreManagement.Data.deps.json
+D:\StoreManagement\src\StoreManagement.Data\bin\Debug\net9.0\StoreManagement.Data.dll
+D:\StoreManagement\src\StoreManagement.Data\bin\Debug\net9.0\StoreManagement.Data.pdb
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.csproj.AssemblyReference.cache
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.AssemblyInfoInputs.cache
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.AssemblyInfo.cs
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.csproj.CoreCompileInputs.cache
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.dll
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\refint\StoreManagement.Data.dll
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.pdb
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\ref\StoreManagement.Data.dll
+D:\StoreManagement\src\StoreManagement.Data\obj\Debug\net9.0\StoreManagement.Data.sourcelink.json

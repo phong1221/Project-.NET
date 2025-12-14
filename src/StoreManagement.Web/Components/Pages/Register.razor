@@ -1,0 +1,104 @@
+@page "/user/register"
+@inject IUserService UserService
+@inject ICustomerService CustomerService
+@inject NavigationManager Nav
+@inject IJSRuntime JSRuntime
+
+<div class="row justify-content-center animate__animated animate__fadeInUp">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="mb-0"><i class="fas fa-user-plus"></i> Đăng ký thành viên</h4>
+            </div>
+            <div class="card-body p-4">
+                @if (!string.IsNullOrEmpty(error))
+                {
+                    <div class="alert alert-danger animate__animated animate__headShake">@error</div>
+                }
+
+                <h5 class="text-secondary mb-3">Thông tin tài khoản</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Tên tài khoản (*)</label>
+                        <input class="form-control" @bind="username" placeholder="Nhập tên đăng nhập..." />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Mật khẩu (*)</label>
+                        <input type="password" class="form-control" @bind="password" />
+                    </div>
+                </div>
+                
+                <hr class="my-3"/>
+                <h5 class="text-secondary mb-3">Thông tin cá nhân</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Họ tên (*)</label>
+                    <input class="form-control" @bind="customer.Name" />
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Số điện thoại</label>
+                        <input class="form-control" @bind="customer.Phone" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Email</label>
+                        <input class="form-control" @bind="customer.Email" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Địa chỉ</label>
+                    <textarea class="form-control" rows="2" @bind="customer.Address"></textarea>
+                </div>
+                
+                <button class="btn btn-success w-100 py-2 mt-3 fs-5" @onclick="HandleRegister">
+                    <i class="fas fa-check-circle"></i> Đăng ký ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    string username;
+    string password;
+    string error;
+    Customer customer = new Customer();
+
+    async Task HandleRegister()
+    {
+        error = null;
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(customer.Name))
+        {
+            error = "Vui lòng nhập đầy đủ thông tin bắt buộc.";
+            await JSRuntime.InvokeVoidAsync("ShowToast", "warning", error);
+            return;
+        }
+
+        // 1. Check if user exists
+        var users = await UserService.SearchUsersAsync(username);
+        if (users.Any(u => u.Username == username))
+        {
+            error = "Tên tài khoản đã tồn tại.";
+            await JSRuntime.InvokeVoidAsync("ShowToast", "error", error);
+            return;
+        }
+
+        // 2. Create User
+        var newUser = new User
+        {
+            Username = username,
+            Password = password,
+            FullName = customer.Name,
+            Role = "customer",
+            CreatedAt = DateTime.Now
+        };
+        await UserService.AddUserAsync(newUser);
+
+        // 3. Create Customer Profile
+        customer.Password = password; 
+        await CustomerService.AddCustomerAsync(customer);
+
+        await JSRuntime.InvokeVoidAsync("ShowToast", "success", "Đăng ký thành công! Vui lòng đăng nhập.");
+        Nav.NavigateTo("/user/login");
+    }
+}
