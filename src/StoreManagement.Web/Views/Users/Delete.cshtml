@@ -1,0 +1,20 @@
+@model StoreManagement.Data.Entities.User
+@{ ViewData["Title"] = "Xóa nhân viên"; }
+
+<h2>Xóa nhân viên</h2>
+<div class="alert alert-danger">
+    <h4>Bạn có chắc chắn muốn xóa nhân viên này?</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Username:</dt>
+        <dd class="col-sm-9">@Model.Username</dd>
+        <dt class="col-sm-3">Họ tên:</dt>
+        <dd class="col-sm-9">@Model.FullName</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="UserId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

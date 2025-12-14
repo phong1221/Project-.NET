@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - StoreManagement</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading border-bottom bg-dark text-white fw-bold">STORE MANAGER</div>
+            <div class="list-group list-group-flush">
+                @if (User.IsInRole("admin"))
+                {
+                    <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Home" asp-action="Index"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                }
+                
+                <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Pos" asp-action="Index"><i class="fas fa-cash-register me-2"></i>Bán hàng (POS)</a>
+                <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Orders" asp-action="Index"><i class="fas fa-receipt me-2"></i>Hóa đơn</a>
+                
+                @if (User.IsInRole("admin"))
+                {
+                    <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Products" asp-action="Index"><i class="fas fa-box me-2"></i>Sản phẩm</a>
+                    <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Categories" asp-action="Index"><i class="fas fa-tags me-2"></i>Danh mục</a>
+                }
+
+                <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Inventory" asp-action="Index"><i class="fas fa-warehouse me-2"></i>Kho hàng</a>
+                <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Customers" asp-action="Index"><i class="fas fa-users me-2"></i>Khách hàng</a>
+                
+                @if (User.IsInRole("admin"))
+                {
+                    <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Suppliers" asp-action="Index"><i class="fas fa-truck me-2"></i>Nhà cung cấp</a>
+                    <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Promotions" asp-action="Index"><i class="fas fa-percent me-2"></i>Khuyến mãi</a>
+                }
+
+                <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Payments" asp-action="Index"><i class="fas fa-money-bill-wave me-2"></i>Thanh toán</a>
+                <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Reports" asp-action="Index"><i class="fas fa-chart-line me-2"></i>Báo cáo</a>
+                
+                @if (User.IsInRole("admin"))
+                {
+                    <a class="list-group-item list-group-item-action list-group-item-dark p-3" asp-controller="Users" asp-action="Index"><i class="fas fa-user-shield me-2"></i>Tài khoản</a>
+                }
+            </div>
+        </div>
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-dark" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-1"></i> Xin chào, @User.Identity?.Name
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end shadow animate__animated animate__fadeIn" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="#"><i class="fas fa-id-card me-2"></i>Hồ sơ</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="container-fluid p-4 animate__animated animate__fadeIn">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $("#sidebarToggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+
+        // Setup Notifications
+        $(document).ready(function() {
+            @if (TempData["Success"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: @Html.Raw(Json.Serialize(TempData["Success"])),
+                    timer: 2000,
+                    showConfirmButton: false,
+                    position: 'top-end',
+                    toast: true
+                });
+                </text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: @Html.Raw(Json.Serialize(TempData["Error"])),
+                    timer: 3000,
+                    showConfirmButton: false,
+                    position: 'top-end',
+                    toast: true
+                });
+                </text>
+            }
+        });
+
+        // Global Delete Confirmation
+        function confirmDelete(id, entityName) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa?',
+                text: "Hành động này không thể hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa ngay',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#delete-form-' + id).submit();
+                }
+            })
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

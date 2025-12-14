@@ -1,0 +1,19 @@
+@model StoreManagement.Data.Entities.Category
+@{ ViewData["Title"] = "Xóa danh mục"; }
+
+<h2>Xóa danh mục</h2>
+<div class="alert alert-danger">
+    <h4>Bạn có chắc chắn muốn xóa danh mục này?</h4>
+    <p>Lưu ý: Nếu danh mục có sản phẩm, việc xóa có thể bị lỗi.</p>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Tên:</dt>
+        <dd class="col-sm-9">@Model.CategoryName</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="CategoryId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

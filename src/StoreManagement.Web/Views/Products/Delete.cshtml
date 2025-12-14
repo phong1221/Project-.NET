@@ -1,0 +1,21 @@
+@model StoreManagement.Data.Entities.Product
+@{ ViewData["Title"] = "Xóa sản phẩm"; }
+
+<h2>Xóa sản phẩm</h2>
+<div class="alert alert-danger">
+    <h4>Bạn có chắc chắn muốn xóa sản phẩm này?</h4>
+    <p>Lưu ý: Nếu sản phẩm đã có trong đơn hàng, bạn có thể không xóa được.</p>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Tên:</dt>
+        <dd class="col-sm-9">@Model.ProductName</dd>
+        <dt class="col-sm-3">Giá:</dt>
+        <dd class="col-sm-9">@Model.Price.ToString("N0")</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ProductId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

@@ -1,0 +1,69 @@
+@page "/user/checkout"
+@inject CartService CartService
+@inject CustomerAuthService AuthService
+@inject IOrderService OrderService
+@inject NavigationManager Nav
+
+<h2>Xác nhận Đặt hàng</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header">Thông tin khách hàng</div>
+            <div class="card-body">
+                <p><strong>Họ tên:</strong> @AuthService.CurrentCustomer?.Name</p>
+                <p><strong>SĐT:</strong> @AuthService.CurrentCustomer?.Phone</p>
+                <p><strong>Địa chỉ:</strong> @AuthService.CurrentCustomer?.Address</p>
+            </div>
+        </div>
+        
+         <div class="card shadow mb-4">
+            <div class="card-header">Thông tin hóa đơn</div>
+            <div class="card-body">
+                @foreach(var item in CartService.Items)
+                {
+                    <div class="d-flex justify-content-between">
+                        <span>@item.Product.ProductName x @item.Quantity</span>
+                        <span>@((item.Product.Price * item.Quantity).ToString("N0")) ₫</span>
+                    </div>
+                }
+                <hr />
+                <h5 class="text-end text-danger">Tổng tiền: @CartService.TotalAmount.ToString("N0") ₫</h5>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header">Phương thức thanh toán</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>Chọn phương thức:</label>
+                    <select class="form-select" @bind="paymentMethod">
+                        <option value="cod">Tiền mặt (COD)</option>
+                        <option value="card">Thẻ (Card)</option>
+                        <option value="e-wallet">Ví điện tử (E-Wallet)</option>
+                        <option value="bank_transfer">Chuyển khoản (Bank Transfer)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-success w-100" @onclick="PlaceOrder">Xác nhận đặt hàng</button>
+    </div>
+</div>
+
+@code {
+    string paymentMethod = "cod";
+
+    async Task PlaceOrder()
+    {
+        if (!AuthService.IsLoggedIn) { Nav.NavigateTo("/user/login"); return; }
+        
+        // Pass userId as null, customerId, promoId=null, items list, selected payment method
+        var itemsList = CartService.Items.Select(i => (i.Product.ProductId, i.Quantity)).ToList();
+        // Create order with 'pending' status
+        await OrderService.CreateOrderAsync(null, AuthService.CurrentCustomer.CustomerId, null, itemsList, paymentMethod, "pending");
+        
+        CartService.ClearCart();
+        Nav.NavigateTo("/user/order-success");
+    }
+}

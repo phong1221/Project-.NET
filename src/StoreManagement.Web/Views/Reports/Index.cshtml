@@ -1,0 +1,161 @@
+@{
+    ViewData["Title"] = "Báo cáo thống kê";
+}
+
+<h1 class="h3 mb-4 text-gray-800">Thống kê & Báo cáo</h1>
+
+<!-- Stats Cards -->
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Doanh thu (Hôm nay)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@((ViewBag.RevenueToday as decimal?)?.ToString("N0")) ₫</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Doanh thu (Tháng này)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@((ViewBag.RevenueMonth as decimal?)?.ToString("N0")) ₫</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Doanh thu (Năm nay)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@((ViewBag.RevenueYear as decimal?)?.ToString("N0")) ₫</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Biểu đồ doanh thu (7 ngày qua)</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Top 5 Sản phẩm bán chạy</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="productChart"></canvas>
+                </div>
+            </div>
+        </div>
+         <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Phương thức thanh toán</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Revenue Chart
+        var ctxRev = document.getElementById("revenueChart").getContext('2d');
+        var revenueChart = new Chart(ctxRev, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels)),
+                datasets: [{
+                    label: "Doanh thu",
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(78, 115, 223, 0.05)",
+                    borderColor: "rgba(78, 115, 223, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHoverRadius: 3,
+                    pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    data: @Html.Raw(Json.Serialize(ViewBag.ChartValues)),
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: { padding: { left: 10, right: 25, top: 25, bottom: 0 } },
+                scales: {
+                    x: { grid: { display: false, drawBorder: false }, ticks: { maxTicksLimit: 7 } },
+                    y: { ticks: { maxTicksLimit: 5, padding: 10, callback: function(value) { return value.toLocaleString() + ' ₫'; } }, grid: { color: "rgb(234, 236, 244)", drawBorder: false, borderDash: [2], zeroLineBorderDash: [2] } }
+                },
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return context.parsed.y.toLocaleString() + ' ₫'; } } } }
+            }
+        });
+
+        // Top Product Chart
+        var ctxProd = document.getElementById("productChart").getContext('2d');
+        var productChart = new Chart(ctxProd, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.TopProdLabels)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(ViewBag.TopProdValues)),
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } },
+                cutout: '70%',
+            }
+        });
+        
+        // Payment Method Chart
+        var ctxPay = document.getElementById("paymentChart").getContext('2d');
+        var paymentChart = new Chart(ctxPay, {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.MethodLabels)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(ViewBag.MethodValues)),
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+}

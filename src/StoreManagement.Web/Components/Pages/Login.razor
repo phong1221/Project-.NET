@@ -1,0 +1,72 @@
+@page "/user/login"
+@inject IUserService UserService
+@inject ICustomerService CustomerService
+@inject CustomerAuthService AuthService
+@inject NavigationManager Nav
+@inject IJSRuntime JSRuntime
+
+<div class="row justify-content-center animate__animated animate__fadeInDown">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0 rounded-3">
+             <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Đăng nhập</h4>
+            </div>
+            <div class="card-body p-4">
+                @if (!string.IsNullOrEmpty(error))
+                {
+                    <div class="alert alert-danger animate__animated animate__shakeX">@error</div>
+                }
+                
+                <div class="form-floating mb-3">
+                    <input class="form-control" id="floatingInput" @bind="username" placeholder="name@example.com">
+                    <label for="floatingInput">Tên tài khoản</label>
+                </div>
+                 <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="floatingPassword" @bind="password" placeholder="Password">
+                    <label for="floatingPassword">Mật khẩu</label>
+                </div>
+                <button class="btn btn-primary w-100 py-2 fs-5" @onclick="HandleLogin">
+                    <span class="fas fa-arrow-right"></span> Đăng nhập
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    string username;
+    string password;
+    string error;
+
+    async Task HandleLogin()
+    {
+        // 1. Check against Users table first
+        var user = await UserService.LoginAsync(username, password);
+        
+        if (user != null && user.Role == "customer")
+        {
+            var customers = await CustomerService.SearchCustomersAsync(username);
+            var customer = customers.FirstOrDefault(c => c.Phone == username || c.Name == user.FullName);
+             
+            if (customer == null)
+            {
+                customer = new Customer 
+                { 
+                    Name = user.FullName ?? user.Username, 
+                    Phone = username,
+                    Address = "Cập nhật sau"
+                };
+                await CustomerService.AddCustomerAsync(customer);
+            }
+            
+            AuthService.Login(customer);
+            await JSRuntime.InvokeVoidAsync("ShowToast", "success", "Đăng nhập thành công!");
+            Nav.NavigateTo("/user");
+            return;
+        }
+
+        // Fallback for demo
+        error = "Thông tin đăng nhập không chính xác!";
+        await JSRuntime.InvokeVoidAsync("ShowToast", "error", "Đăng nhập thất bại!");
+    }
+}
