@@ -10,5 +10,7 @@ namespace StoreManagement.Services.Interfaces
         Task AddPromotionAsync(Promotion promotion);
         Task UpdatePromotionAsync(Promotion promotion);
         Task DeletePromotionAsync(int id);
+        Task<IEnumerable<Promotion>> GetActivePromotionsAsync();
+        Task<Promotion?> GetPromotionByCodeAsync(string code);
     }
 }

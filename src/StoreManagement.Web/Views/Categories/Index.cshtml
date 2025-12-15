@@ -34,7 +34,9 @@
                         <td>@item.CategoryName</td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-sm btn-info text-white"><i class="fas fa-edit"></i></a>
-                            <a asp-action="Delete" asp-route-id="@item.CategoryId" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                            <form asp-action="Delete" asp-route-id="@item.CategoryId" method="post" id="delete-form-@item.CategoryId" style="display:inline-block">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(@item.CategoryId, 'danh mục')"><i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                 }

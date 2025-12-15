@@ -55,7 +55,7 @@
                                 <input type="text" class="form-control text-center" value="@quantity" readonly />
                                 <button class="btn btn-outline-secondary" @onclick="IncreaseQty">+</button>
                             </div>
-                            <span class="ms-3 text-muted">Có sẵn: 100+</span>
+                            <span class="ms-3 text-muted">Có sẵn: @(stock > 0 ? stock.ToString() : "Hết hàng")</span>
                         </div>
 
                         <button class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm fw-bold" @onclick="AddToCart">
@@ -70,6 +70,8 @@
 
 @inject CustomerAuthService AuthService
 
+@inject IInventoryService InventoryService
+
 @code {
     [Parameter]
     public int Id { get; set; }
@@ -77,14 +79,27 @@
     private Product? product;
     private bool notFound = false;
     private int quantity = 1;
+    private int stock = 0;
 
     protected override async Task OnInitializedAsync()
     {
         product = await ProductService.GetProductByIdAsync(Id);
-        if (product == null) notFound = true;
+        if (product == null) 
+        {
+            notFound = true;
+        }
+        else
+        {
+            var inv = await InventoryService.GetInventoryByProductIdAsync(Id);
+            stock = inv?.Quantity ?? 0;
+        }
     }
 
-    void IncreaseQty() => quantity++;
+    void IncreaseQty() 
+    {
+        if (quantity < stock) quantity++;
+    }
+    
     void DecreaseQty() { if (quantity > 1) quantity--; }
 
     async Task AddToCart()
@@ -95,10 +110,23 @@
             return;
         }
 
+        if (stock <= 0)
+        {
+             await JSRuntime.InvokeVoidAsync("ShowToast", "error", "Sản phẩm đã hết hàng!");
+             return;
+        }
+        
+        if (quantity > stock)
+        {
+             await JSRuntime.InvokeVoidAsync("ShowToast", "error", $"Chỉ còn {stock} sản phẩm trong kho!");
+             return;
+        }
+
         if (product != null)
         {
             await CartService.AddToCartAsync(product, quantity);
             await JSRuntime.InvokeVoidAsync("ShowToast", "success", $"Đã thêm {quantity} {product.ProductName} vào giỏ");
+            // Optional: Reduce local stock display temporarily? No, keep sync with server better.
         }
     }
 

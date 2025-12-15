@@ -38,6 +38,7 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.AddInventoryAsync(inventory);
+                TempData["Success"] = "Thêm kho hàng thành công!";
                 return RedirectToAction(nameof(Index));
             }
              ViewBag.ProductId = new SelectList(await _productService.GetAllProductsAsync(), "ProductId", "ProductName", inventory.ProductId);
@@ -61,13 +62,14 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.UpdateInventoryAsync(inventory);
+                TempData["Success"] = "Cập nhật kho hàng thành công!";
                 return RedirectToAction(nameof(Index));
             }
              ViewBag.ProductId = new SelectList(await _productService.GetAllProductsAsync(), "ProductId", "ProductName", inventory.ProductId);
             return View(inventory);
         }
 
-         public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var inventory = await _service.GetInventoryByIdAsync(id);
             if (inventory == null) return NotFound();
@@ -79,6 +81,7 @@ namespace StoreManagement.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _service.DeleteInventoryAsync(id);
+            TempData["Success"] = "Xóa kho hàng thành công!";
             return RedirectToAction(nameof(Index));
         }
     }

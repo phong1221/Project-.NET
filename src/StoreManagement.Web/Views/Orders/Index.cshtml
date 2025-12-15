@@ -43,8 +43,8 @@
                                 <a asp-action="Details" asp-route-id="@item.OrderId" class="btn btn-sm btn-info text-white"><i class="fas fa-eye"></i></a>
                                 @if(item.Status == "pending")
                                 {
-                                    <form asp-action="Confirm" asp-route-id="@item.OrderId" method="post" style="display:inline-block">
-                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Xác nhận đơn hàng và thanh toán?')"><i class="fas fa-check"></i> Duyệt</button>
+                                    <form asp-action="Confirm" asp-route-id="@item.OrderId" method="post" id="confirm-form-@item.OrderId" style="display:inline-block">
+                                        <button type="button" class="btn btn-sm btn-success" onclick="confirmOrder(@item.OrderId)"><i class="fas fa-check"></i> Duyệt</button>
                                     </form>
                                 }
                             </td>
@@ -69,3 +69,24 @@
         </nav>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function confirmOrder(id) {
+            Swal.fire({
+                title: 'Xác nhận đơn hàng?',
+                text: "Bạn có chắc chắn muốn xác nhận và thanh toán?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('confirm-form-' + id).submit();
+                }
+            })
+        }
+    </script>
+}

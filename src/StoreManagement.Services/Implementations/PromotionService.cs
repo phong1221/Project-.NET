@@ -49,5 +49,21 @@ namespace StoreManagement.Services.Implementations
         {
             await _repository.DeleteAsync(id);
         }
+
+        public async Task<IEnumerable<Promotion>> GetActivePromotionsAsync()
+        {
+            var now = DateTime.Now.Date;
+            return await _repository.Query()
+                .Where(p => p.Status == "active" && p.StartDate <= now && p.EndDate >= now)
+                .OrderBy(p => p.EndDate)
+                .ToListAsync();
+        }
+
+        public async Task<Promotion?> GetPromotionByCodeAsync(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code)) return null;
+            return await _repository.Query()
+                .FirstOrDefaultAsync(p => p.PromoCode == code);
+        }
     }
 }

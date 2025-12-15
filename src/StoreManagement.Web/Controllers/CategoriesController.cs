@@ -34,6 +34,7 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.AddCategoryAsync(category);
+                TempData["Success"] = "Thêm danh mục thành công!";
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -55,6 +56,7 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.UpdateCategoryAsync(category);
+                TempData["Success"] = "Cập nhật danh mục thành công!";
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -72,6 +74,7 @@ namespace StoreManagement.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _service.DeleteCategoryAsync(id);
+            TempData["Success"] = "Xóa danh mục thành công!";
             return RedirectToAction(nameof(Index));
         }
     }

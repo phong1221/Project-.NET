@@ -34,6 +34,7 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.AddPromotionAsync(promotion);
+                TempData["Success"] = "Thêm khuyến mãi thành công!";
                 return RedirectToAction(nameof(Index));
             }
             return View(promotion);
@@ -55,6 +56,7 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.UpdatePromotionAsync(promotion);
+                TempData["Success"] = "Cập nhật khuyến mãi thành công!";
                 return RedirectToAction(nameof(Index));
             }
             return View(promotion);
@@ -72,6 +74,7 @@ namespace StoreManagement.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _service.DeletePromotionAsync(id);
+            TempData["Success"] = "Xóa khuyến mãi thành công!";
             return RedirectToAction(nameof(Index));
         }
     }

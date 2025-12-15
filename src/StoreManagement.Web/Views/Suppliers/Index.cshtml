@@ -38,7 +38,9 @@
                         <td>@item.Address</td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.SupplierId" class="btn btn-sm btn-info text-white"><i class="fas fa-edit"></i></a>
-                            <a asp-action="Delete" asp-route-id="@item.SupplierId" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                            <form asp-action="Delete" asp-route-id="@item.SupplierId" method="post" id="delete-form-@item.SupplierId" style="display:inline-block">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(@item.SupplierId, 'nhà cung cấp')"><i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                 }

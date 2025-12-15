@@ -28,7 +28,29 @@
                     </div>
                 }
                 <hr />
-                <h5 class="text-end text-danger">Tổng tiền: @CartService.TotalAmount.ToString("N0") ₫</h5>
+                
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Mã giảm giá" @bind="promoCode" />
+                    <button class="btn btn-outline-secondary" type="button" @onclick="ApplyPromo">Áp dụng</button>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tạm tính:</span>
+                    <span>@CartService.TotalAmount.ToString("N0") ₫</span>
+                </div>
+                
+                @if (discountAmount > 0)
+                {
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Giảm giá (@appliedPromo?.PromoCode):</span>
+                        <span>-@discountAmount.ToString("N0") ₫</span>
+                    </div>
+                }
+
+                <h5 class="d-flex justify-content-between mt-3 text-danger fw-bold">
+                    <span>Tổng tiền:</span>
+                    <span>@((CartService.TotalAmount - discountAmount).ToString("N0")) ₫</span>
+                </h5>
             </div>
         </div>
         
@@ -51,17 +73,86 @@
     </div>
 </div>
 
+@inject IJSRuntime JSRuntime
+@inject IPromotionService PromotionService
+
 @code {
     string paymentMethod = "cod";
+    string promoCode = "";
+    Promotion? appliedPromo;
+    decimal discountAmount = 0;
+
+    async Task ApplyPromo()
+    {
+        if (string.IsNullOrWhiteSpace(promoCode)) return;
+
+        var promo = await PromotionService.GetPromotionByCodeAsync(promoCode);
+        if (promo == null || promo.Status != "active")
+        {
+             await JSRuntime.InvokeVoidAsync("ShowToast", "error", "Mã giảm giá không tồn tại hoặc đã hết hạn.");
+             appliedPromo = null;
+             discountAmount = 0;
+             return;
+        }
+
+        var today = DateTime.Now.Date;
+        if (promo.StartDate > today || promo.EndDate < today)
+        {
+             await JSRuntime.InvokeVoidAsync("ShowToast", "error", "Mã giảm giá chưa bắt đầu hoặc đã hết hạn.");
+             appliedPromo = null;
+             discountAmount = 0;
+             return;
+        }
+
+        if (CartService.TotalAmount < promo.MinOrderAmount)
+        {
+             await JSRuntime.InvokeVoidAsync("ShowToast", "error", $"Đơn hàng tối thiểu phải từ {promo.MinOrderAmount:N0}₫.");
+             appliedPromo = null;
+             discountAmount = 0;
+             return;
+        }
+
+        if (promo.UsageLimit > 0 && promo.UsedCount >= promo.UsageLimit)
+        {
+             await JSRuntime.InvokeVoidAsync("ShowToast", "error", "Mã giảm giá đã hết lượt sử dụng.");
+             appliedPromo = null;
+             discountAmount = 0;
+             return;
+        }
+
+        // Apply Discount
+        appliedPromo = promo;
+        if (promo.DiscountType == "percent")
+        {
+            discountAmount = CartService.TotalAmount * (promo.DiscountValue / 100);
+        }
+        else
+        {
+            discountAmount = promo.DiscountValue;
+        }
+        
+        // Cap at total amount (optional, but logical)
+        if (discountAmount > CartService.TotalAmount) discountAmount = CartService.TotalAmount;
+
+        await JSRuntime.InvokeVoidAsync("ShowToast", "success", "Áp dụng mã giảm giá thành công!");
+    }
 
     async Task PlaceOrder()
     {
         if (!AuthService.IsLoggedIn) { Nav.NavigateTo("/user/login"); return; }
         
-        // Pass userId as null, customerId, promoId=null, items list, selected payment method
+        // Pass userId as null, customerId, promoId, items list, selected payment method
         var itemsList = CartService.Items.Select(i => (i.Product.ProductId, i.Quantity)).ToList();
+        
         // Create order with 'pending' status
-        await OrderService.CreateOrderAsync(null, AuthService.CurrentCustomer.CustomerId, null, itemsList, paymentMethod, "pending");
+        await OrderService.CreateOrderAsync(
+            null, 
+            AuthService.CurrentCustomer.CustomerId, 
+            appliedPromo?.PromoId, 
+            itemsList, 
+            paymentMethod, 
+            "pending"
+        );
         
         await CartService.ClearCartAsync();
         Nav.NavigateTo("/user/order-success");

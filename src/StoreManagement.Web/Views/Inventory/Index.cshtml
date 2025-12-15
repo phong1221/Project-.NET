@@ -36,7 +36,9 @@
                         <td>@item.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.InventoryId" class="btn btn-sm btn-info text-white"><i class="fas fa-edit"></i></a>
-                             <a asp-action="Delete" asp-route-id="@item.InventoryId" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                             <form asp-action="Delete" asp-route-id="@item.InventoryId" method="post" id="delete-form-@item.InventoryId" style="display:inline-block">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(@item.InventoryId, 'kho hàng')"><i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                 }
