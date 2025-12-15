@@ -101,6 +101,15 @@
                         <span id="totalAmount" class="h3 text-danger fw-bold m-0">0 ₫</span>
                     </div>
                     
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-credit-card me-2"></i>Phương thức thanh toán</label>
+                        <select id="paymentMethod" class="form-select">
+                            <option value="cash" selected>Tiền mặt</option>
+                            <option value="transfer">Chuyển khoản</option>
+                            <option value="card">Thẻ tín dụng / Ghi nợ</option>
+                        </select>
+                    </div>
+
                     <div class="row g-2">
                         <div class="col-6">
                              <button class="btn btn-outline-danger w-100 py-2" onclick="clearCart()">
@@ -285,7 +294,7 @@
              let data = {
                 customerId: $('#customerSelect').val() ? parseInt($('#customerSelect').val()) : null,
                 items: items,
-                paymentMethod: 'cash' // Default to cash for POS
+                paymentMethod: $('#paymentMethod').val() // Get selected payment method
             };
             
             // Show loading

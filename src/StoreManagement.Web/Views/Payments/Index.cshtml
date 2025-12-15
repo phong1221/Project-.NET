@@ -25,10 +25,17 @@
                         <td>@(item.Order?.Customer?.Name ?? "Khách lẻ")</td>
                         <td class="text-danger fw-bold">@item.Amount.ToString("N0") ₫</td>
                         <td>
-                             @if(item.PaymentMethod?.ToLower() == "cash" || item.PaymentMethod?.ToLower() == "cod") { <span class="badge bg-success">Tiền mặt (COD)</span> }
-                             else if(item.PaymentMethod?.ToLower() == "card") { <span class="badge bg-primary">Thẻ</span> }
-                             else if(item.PaymentMethod?.ToLower() == "e-wallet") { <span class="badge bg-info">Ví điện tử</span> }
-                             else { <span class="badge bg-secondary">@item.PaymentMethod</span> }
+                            @if(string.IsNullOrWhiteSpace(item.PaymentMethod) || 
+                                item.PaymentMethod.Trim().ToLower() == "cash" || 
+                                item.PaymentMethod.Trim().ToLower() == "cod" ||
+                                item.PaymentMethod.Trim().ToLower() == "tien mat") 
+                            { 
+                                <span class="badge bg-success">Tiền mặt</span> 
+                            }
+                             else if(item.PaymentMethod?.Trim().ToLower() == "card") { <span class="badge bg-primary">Thẻ</span> }
+                             else if(item.PaymentMethod?.Trim().ToLower() == "e-wallet") { <span class="badge bg-info">Ví điện tử</span> }
+                             else if(item.PaymentMethod?.Trim().ToLower() == "transfer" || item.PaymentMethod?.Trim().ToLower() == "bank_transfer" || item.PaymentMethod?.Trim().ToLower() == "chuyen khoan") { <span class="badge bg-secondary">Chuyển khoản</span> }
+                             else { <span class="badge bg-light text-dark border">@item.PaymentMethod</span> }
                         </td>
                         <td>@item.PaymentDate.ToString("dd/MM/yyyy HH:mm")</td>
                     </tr>

@@ -8,5 +8,6 @@ namespace StoreManagement.Services.Interfaces
         Task ConfirmOrderAsync(int orderId, int adminUserId);
         Task<IEnumerable<Order>> GetOrdersAsync();
         Task<Order?> GetOrderByIdAsync(int id);
+        Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId);
     }
 }

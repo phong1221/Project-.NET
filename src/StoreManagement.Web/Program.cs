@@ -18,7 +18,7 @@ builder.Services.AddServerSideBlazor();
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<StoreManagementContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
 
 // Existing Services
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -99,6 +99,9 @@ using (var scope = app.Services.CreateScope())
 
         // NEW: Add payment_method to orders table to store user preference
         await context.Database.ExecuteSqlRawAsync("ALTER TABLE orders ADD COLUMN payment_method VARCHAR(50) NULL;");
+        
+        // NEW: Update status enum to support 'cart'
+        await context.Database.ExecuteSqlRawAsync("ALTER TABLE orders MODIFY COLUMN status ENUM('pending','paid','canceled','cart') DEFAULT 'pending';");
     }
     catch
     {
@@ -110,6 +113,10 @@ using (var scope = app.Services.CreateScope())
         
         try {
              await context.Database.ExecuteSqlRawAsync("ALTER TABLE orders ADD COLUMN payment_method VARCHAR(50) NULL;");
+        } catch {}
+
+        try {
+             await context.Database.ExecuteSqlRawAsync("ALTER TABLE orders MODIFY COLUMN status ENUM('pending','paid','canceled','cart') DEFAULT 'pending';");
         } catch {}
     }
 }
