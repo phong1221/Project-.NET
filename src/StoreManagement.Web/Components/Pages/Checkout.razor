@@ -63,7 +63,7 @@
         // Create order with 'pending' status
         await OrderService.CreateOrderAsync(null, AuthService.CurrentCustomer.CustomerId, null, itemsList, paymentMethod, "pending");
         
-        CartService.ClearCart();
+        await CartService.ClearCartAsync();
         Nav.NavigateTo("/user/order-success");
     }
 }

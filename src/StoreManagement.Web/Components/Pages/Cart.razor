@@ -28,10 +28,18 @@ else
                 <tr>
                     <td>@item.Product.ProductName</td>
                     <td>@item.Product.Price.ToString("N0")</td>
-                    <td>@item.Quantity</td>
+                    <td>
+                        <div class="input-group input-group-sm" style="width: 120px;">
+                            <button class="btn btn-outline-secondary" @onclick="async () => { if (item.Quantity > 1) await CartService.AddToCartAsync(item.Product, -1); }">-</button>
+                            <span class="form-control text-center">@item.Quantity</span>
+                            <button class="btn btn-outline-secondary" @onclick="async () => await CartService.AddToCartAsync(item.Product, 1)">+</button>
+                        </div>
+                    </td>
                     <td>@((item.Product.Price * item.Quantity).ToString("N0"))</td>
                     <td>
-                        <button class="btn btn-sm btn-danger" @onclick="() => CartService.RemoveFromCart(item.Product)">Xóa</button>
+                        <button class="btn btn-sm btn-danger" @onclick="async () => await CartService.RemoveFromCartAsync(item.Product)">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
             }

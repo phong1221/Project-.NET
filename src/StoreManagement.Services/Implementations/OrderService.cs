@@ -16,6 +16,10 @@ namespace StoreManagement.Services.Implementations
 
         public async Task<Order> CreateOrderAsync(int? userId, int? customerId, int? promoId, List<(int productId, int quantity)> items, string paymentMethod, string status = "paid")
         {
+            // Enforce default payment method
+            if (string.IsNullOrWhiteSpace(paymentMethod)) paymentMethod = "cash";
+            paymentMethod = paymentMethod.Trim();
+
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
@@ -140,11 +144,13 @@ namespace StoreManagement.Services.Implementations
              _context.Orders.Update(order);
 
              // Create Payment using the stored preference or default to COD
+             var paymentMethod = !string.IsNullOrWhiteSpace(order.PaymentMethod) ? order.PaymentMethod : "cash";
+
              var payment = new Payment
              {
                  OrderId = order.OrderId,
                  Amount = order.TotalAmount ?? 0,
-                 PaymentMethod = order.PaymentMethod ?? "cod", 
+                 PaymentMethod = paymentMethod, 
                  PaymentDate = DateTime.Now
              };
              await _context.Payments.AddAsync(payment);
@@ -166,6 +172,17 @@ namespace StoreManagement.Services.Implementations
             return await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.User)
+                .Where(o => o.Status != "cart")
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .Where(o => o.CustomerId == customerId && o.Status != "cart")
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }

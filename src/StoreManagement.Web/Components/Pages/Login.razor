@@ -2,6 +2,7 @@
 @inject IUserService UserService
 @inject ICustomerService CustomerService
 @inject CustomerAuthService AuthService
+@inject CartService CartService
 @inject NavigationManager Nav
 @inject IJSRuntime JSRuntime
 
@@ -34,9 +35,9 @@
 </div>
 
 @code {
-    string username;
-    string password;
-    string error;
+    string username = "";
+    string password = "";
+    string error = "";
 
     async Task HandleLogin()
     {
@@ -60,6 +61,7 @@
             }
             
             AuthService.Login(customer);
+            await CartService.LoadCartFromDbAsync(customer.CustomerId);
             await JSRuntime.InvokeVoidAsync("ShowToast", "success", "Đăng nhập thành công!");
             Nav.NavigateTo("/user");
             return;

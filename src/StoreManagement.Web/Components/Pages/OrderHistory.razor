@@ -1,0 +1,129 @@
+@page "/user/history"
+@inject IOrderService OrderService
+@inject CustomerAuthService AuthService
+@inject NavigationManager Nav
+@using StoreManagement.Data.Entities
+
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <h2 class="mb-4 text-primary fw-bold"><i class="fas fa-history me-2"></i>Lịch sử mua hàng</h2>
+
+    @if (!AuthService.IsLoggedIn)
+    {
+        <div class="alert alert-warning">
+            Vui lòng <a href="/user/login">đăng nhập</a> để xem lịch sử mua hàng.
+        </div>
+    }
+    else if (orders == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Đang tải dữ liệu...</p>
+        </div>
+    }
+    else if (!orders.Any())
+    {
+        <div class="text-center py-5">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-2130356-1800917.png" alt="No Orders" style="max-width: 200px; opacity: 0.8" />
+            <p class="text-muted mt-3">Bạn chưa có đơn hàng nào.</p>
+            <a href="/user" class="btn btn-primary">Mua sắm ngay</a>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light text-secondary">
+                            <tr>
+                                <th class="py-3 px-4">Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in orders)
+                            {
+                                <tr>
+                                    <td class="px-4 fw-bold text-dark">#@order.OrderId</td>
+                                    <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="fw-bold text-danger">@((order.TotalAmount ?? 0).ToString("N0")) ₫</td>
+                                    <td>
+                                        @if (order.Status == "paid")
+                                        {
+                                            <span class="badge bg-success rounded-pill px-3">Đã thanh toán</span>
+                                        }
+                                        else if (order.Status == "pending")
+                                        {
+                                            <span class="badge bg-warning text-dark rounded-pill px-3">Chờ xử lý</span>
+                                        }
+                                        else if (order.Status == "canceled")
+                                        {
+                                            <span class="badge bg-danger rounded-pill px-3">Đã hủy</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary rounded-pill px-3">@order.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm rounded-pill" @onclick="() => ToggleDetails(order.OrderId)">
+                                            <i class="fas fa-eye me-1"></i> Xem
+                                        </button>
+                                    </td>
+                                </tr>
+                                @if (expandedOrderId == order.OrderId)
+                                {
+                                    <tr class="bg-light animate__animated animate__fadeIn">
+                                        <td colspan="5" class="p-4">
+                                            <h6 class="fw-bold text-muted mb-3">Chi tiết đơn hàng #@order.OrderId</h6>
+                                            <ul class="list-group shadow-sm">
+                                                @foreach (var item in order.OrderItems)
+                                                {
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom">
+                                                        <div>
+                                                            <span class="fw-bold text-dark">@item.Product.ProductName</span>
+                                                            <span class="text-muted small ms-2">x @item.Quantity</span>
+                                                        </div>
+                                                        <span class="fw-bold text-secondary">@((item.Price * item.Quantity).ToString("N0")) ₫</span>
+                                                    </li>
+                                                }
+                                                <li class="list-group-item d-flex justify-content-between align-items-center bg-white fw-bold">
+                                                    <span>Tổng cộng</span>
+                                                    <span class="text-danger">@((order.TotalAmount ?? 0).ToString("N0")) ₫</span>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private IEnumerable<Order>? orders;
+    private int? expandedOrderId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthService.IsLoggedIn)
+        {
+            orders = await OrderService.GetOrdersByCustomerIdAsync(AuthService.CurrentCustomer.CustomerId);
+        }
+    }
+
+    void ToggleDetails(int orderId)
+    {
+        if (expandedOrderId == orderId)
+            expandedOrderId = null;
+        else
+            expandedOrderId = orderId;
+    }
+}

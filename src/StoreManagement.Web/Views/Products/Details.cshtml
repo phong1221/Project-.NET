@@ -1,0 +1,67 @@
+@model StoreManagement.Data.Entities.Product
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Chi tiết sản phẩm</h1>
+    <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Quay lại</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Thông tin: @Model.ProductName</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">Tên sản phẩm</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.ProductName</dd>
+
+                    <dt class="col-sm-4">Mã vạch (Barcode)</dt>
+                    <dd class="col-sm-8">@(Model.Barcode ?? "Chưa cập nhật")</dd>
+
+                    <dt class="col-sm-4">Danh mục</dt>
+                    <dd class="col-sm-8">@(Model.Category?.CategoryName ?? "Chưa phân loại")</dd>
+
+                    <dt class="col-sm-4">Nhà cung cấp</dt>
+                    <dd class="col-sm-8">@(Model.Supplier?.Name ?? "Chưa cập nhật")</dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                 <dl class="row">
+                    <dt class="col-sm-4">Giá bán</dt>
+                    <dd class="col-sm-8 text-danger fw-bold">@Model.Price.ToString("N0") VND</dd>
+
+                    <dt class="col-sm-4">Đơn vị tính</dt>
+                    <dd class="col-sm-8">@(Model.Unit ?? "-")</dd>
+
+                    <dt class="col-sm-4">Ngày tạo</dt>
+                    <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                </dl>
+            </div>
+        </div>
+        
+        <div class="mt-4 border-top pt-3">
+             <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-warning"><i class="fas fa-edit"></i> Chỉnh sửa</a>
+             <button type="button" class="btn btn-danger" onclick="confirmDelete(@Model.ProductId)"><i class="fas fa-trash"></i> Xóa</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal/Form Delete logic if needed, referencing logic from Index -->
+<form id="delete-form-@Model.ProductId" asp-action="Delete" asp-route-id="@Model.ProductId" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        }
+    </script>
+}
