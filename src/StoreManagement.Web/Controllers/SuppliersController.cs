@@ -34,6 +34,7 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.AddSupplierAsync(supplier);
+                TempData["Success"] = "Thêm nhà cung cấp thành công!";
                 return RedirectToAction(nameof(Index));
             }
             return View(supplier);
@@ -55,12 +56,13 @@ namespace StoreManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _service.UpdateSupplierAsync(supplier);
+                TempData["Success"] = "Cập nhật nhà cung cấp thành công!";
                 return RedirectToAction(nameof(Index));
             }
             return View(supplier);
         }
 
-         public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
              var supplier = await _service.GetSupplierByIdAsync(id);
             if (supplier == null) return NotFound();
@@ -72,6 +74,7 @@ namespace StoreManagement.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _service.DeleteSupplierAsync(id);
+            TempData["Success"] = "Xóa nhà cung cấp thành công!";
             return RedirectToAction(nameof(Index));
         }
     }

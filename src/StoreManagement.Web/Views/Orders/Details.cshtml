@@ -19,7 +19,25 @@
                 <p><strong>Ngày tạo:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
                 <p><strong>Khách hàng:</strong> @(Model.Customer?.Name ?? "Khách lẻ")</p>
                 <p><strong>Nhân viên:</strong> @(Model.User?.Username ?? "N/A")</p>
-                <p><strong>Trạng thái:</strong> <span class="badge bg-success">@Model.Status</span></p>
+                <p><strong>Trạng thái:</strong> 
+                    @if(Model.Status == "paid") {
+                        <span class="badge bg-success">Đã thanh toán</span>
+                    } else if(Model.Status == "pending") {
+                        <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                    } else {
+                        <span class="badge bg-secondary">@Model.Status</span>
+                    }
+                </p>
+
+                @if(Model.Status == "pending")
+                {
+                    <hr/>
+                    <form asp-action="Confirm" asp-route-id="@Model.OrderId" method="post" id="confirm-form-@Model.OrderId">
+                        <button type="button" class="btn btn-success w-100" onclick="confirmOrder(@Model.OrderId)">
+                            <i class="fas fa-check-circle me-2"></i> Xác nhận & Thanh toán
+                        </button>
+                    </form>
+                }
             </div>
         </div>
     </div>
@@ -68,3 +86,24 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function confirmOrder(id) {
+            Swal.fire({
+                title: 'Xác nhận đơn hàng?',
+                text: "Bạn có chắc chắn muốn xác nhận và thanh toán cho đơn hàng này?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('confirm-form-' + id).submit();
+                }
+            })
+        }
+    </script>
+}

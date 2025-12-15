@@ -41,8 +41,20 @@ namespace StoreManagement.Services.Implementations
 
         public async Task AddInventoryAsync(Inventory inventory)
         {
-            inventory.UpdatedAt = DateTime.Now;
-            await _repository.AddAsync(inventory);
+            var existing = await _repository.Query()
+                .FirstOrDefaultAsync(i => i.ProductId == inventory.ProductId);
+
+            if (existing != null)
+            {
+                existing.Quantity += inventory.Quantity;
+                existing.UpdatedAt = DateTime.Now;
+                await _repository.UpdateAsync(existing);
+            }
+            else
+            {
+                inventory.UpdatedAt = DateTime.Now;
+                await _repository.AddAsync(inventory);
+            }
         }
 
         public async Task UpdateInventoryAsync(Inventory inventory)
@@ -54,6 +66,12 @@ namespace StoreManagement.Services.Implementations
         public async Task DeleteInventoryAsync(int id)
         {
             await _repository.DeleteAsync(id);
+        }
+
+        public async Task<Inventory?> GetInventoryByProductIdAsync(int productId)
+        {
+            return await _repository.Query()
+                .FirstOrDefaultAsync(i => i.ProductId == productId);
         }
     }
 }

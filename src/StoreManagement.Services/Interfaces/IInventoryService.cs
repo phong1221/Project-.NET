@@ -10,5 +10,6 @@ namespace StoreManagement.Services.Interfaces
         Task AddInventoryAsync(Inventory inventory);
         Task UpdateInventoryAsync(Inventory inventory);
         Task DeleteInventoryAsync(int id);
+        Task<Inventory?> GetInventoryByProductIdAsync(int productId);
     }
 }

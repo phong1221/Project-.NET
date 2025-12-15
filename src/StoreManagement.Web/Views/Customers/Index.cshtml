@@ -43,7 +43,9 @@
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.CustomerId" class="btn btn-sm btn-info text-white" title="Sửa"><i class="fas fa-edit"></i></a>
                                 <a asp-action="Details" asp-route-id="@item.CustomerId" class="btn btn-sm btn-warning text-white" title="Chi tiết"><i class="fas fa-info-circle"></i></a>
-                                <a asp-action="Delete" asp-route-id="@item.CustomerId" class="btn btn-sm btn-danger" title="Xóa"><i class="fas fa-trash"></i></a>
+                                <form asp-action="Delete" asp-route-id="@item.CustomerId" method="post" id="delete-form-@item.CustomerId" style="display:inline-block">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(@item.CustomerId, 'khách hàng')"><i class="fas fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     }

@@ -1,0 +1,87 @@
+@page "/user/promotions"
+@inject IPromotionService PromotionService
+@inject IJSRuntime JSRuntime
+@using StoreManagement.Data.Entities
+
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <h2 class="mb-4 text-primary fw-bold"><i class="fas fa-tags me-2"></i>Kho Voucher</h2>
+
+    @if (promotions == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Đang tải ưu đãi...</p>
+        </div>
+    }
+    else if (!promotions.Any())
+    {
+        <div class="text-center py-5">
+             <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-offer-2365266-1976690.png" alt="No Vouchers" style="max-width: 200px; opacity: 0.8" />
+             <p class="text-muted mt-3">Hiện chưa có mã giảm giá nào.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var p in promotions)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 voucher-card rounded-3">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-danger rounded-pill px-3 py-2 fs-6">
+                                    @if(p.DiscountType == "percent") { <span>-@p.DiscountValue.ToString("0")%</span> }
+                                    else { <span>-@p.DiscountValue.ToString("N0")₫</span> }
+                                </span>
+                                <small class="text-muted">HSD: @p.EndDate.ToString("dd/MM/yyyy")</small>
+                            </div>
+                            
+                            <h5 class="card-title fw-bold text-dark mt-2">@p.PromoCode</h5>
+                            <p class="card-text text-muted flex-grow-1">@p.Description</p>
+                            
+                            @if(p.MinOrderAmount > 0)
+                            {
+                                <small class="text-primary mb-3"><i class="fas fa-info-circle"></i> Đơn từ @p.MinOrderAmount.ToString("N0")₫</small>
+                            }
+
+                            <div class="mt-auto border-top pt-3 text-center bg-light rounded-bottom p-2">
+                                <button class="btn btn-outline-primary btn-sm w-100 rounded-pill dashed-border" @onclick="() => CopyCode(p.PromoCode)">
+                                    <i class="fas fa-copy me-1"></i> Sao chép mã
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .voucher-card {
+        transition: transform 0.2s;
+        border-left: 5px solid #0d6efd !important;
+    }
+    .voucher-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .dashed-border {
+        border-style: dashed;
+    }
+</style>
+
+@code {
+    private IEnumerable<Promotion>? promotions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        promotions = await PromotionService.GetActivePromotionsAsync();
+    }
+
+    async Task CopyCode(string code)
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", code);
+        await JSRuntime.InvokeVoidAsync("ShowToast", "success", $"Đã sao chép mã {code}");
+    }
+}

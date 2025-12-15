@@ -33,7 +33,7 @@ public class HomeController : Controller
                 .SumAsync(p => p.Amount),
 
             OrdersToday = await _context.Orders
-                .Where(o => o.OrderDate >= today)
+                .Where(o => o.OrderDate >= today && o.Status != "cart")
                 .CountAsync(),
 
             NewCustomersMonth = await _context.Customers
@@ -47,6 +47,7 @@ public class HomeController : Controller
             RecentOrders = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.User)
+                .Where(o => o.Status != "cart")
                 .OrderByDescending(o => o.OrderDate)
                 .Take(5)
                 .ToListAsync()
