@@ -141,20 +141,29 @@
     {
         if (!AuthService.IsLoggedIn) { Nav.NavigateTo("/user/login"); return; }
         
-        // Pass userId as null, customerId, promoId, items list, selected payment method
-        var itemsList = CartService.Items.Select(i => (i.Product.ProductId, i.Quantity)).ToList();
-        
-        // Create order with 'pending' status
-        await OrderService.CreateOrderAsync(
-            null, 
-            AuthService.CurrentCustomer.CustomerId, 
-            appliedPromo?.PromoId, 
-            itemsList, 
-            paymentMethod, 
-            "pending"
-        );
-        
-        await CartService.ClearCartAsync();
-        Nav.NavigateTo("/user/order-success");
+        try
+        {
+            // Pass userId as null, customerId, promoId, items list, selected payment method
+            var itemsList = CartService.Items.Select(i => (i.Product.ProductId, i.Quantity)).ToList();
+            
+            // Create order with 'pending' status
+            await OrderService.CreateOrderAsync(
+                null, 
+                AuthService.CurrentCustomer.CustomerId, 
+                appliedPromo?.PromoId, 
+                itemsList, 
+                paymentMethod, 
+                "pending"
+            );
+            
+            await CartService.ClearCartAsync();
+            Nav.NavigateTo("/user/order-success");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("ShowToast", "error", "Lỗi đặt hàng: " + ex.Message);
+            // Log the full error to console if needed
+            Console.WriteLine(ex.ToString());
+        }
     }
 }

@@ -73,6 +73,17 @@ namespace StoreManagement.Web.Controllers
         {
             var inventory = await _service.GetInventoryByIdAsync(id);
             if (inventory == null) return NotFound();
+
+            if (inventory.Quantity > 0)
+            {
+                ViewBag.CanDelete = false;
+                ViewBag.ErrorMessage = "Không thể xóa kho hàng này vì số lượng tồn kho vẫn còn.";
+            }
+            else
+            {
+                ViewBag.CanDelete = true;
+            }
+
             return View(inventory);
         }
 
@@ -80,9 +91,21 @@ namespace StoreManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _service.DeleteInventoryAsync(id);
-            TempData["Success"] = "Xóa kho hàng thành công!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _service.DeleteInventoryAsync(id);
+                TempData["Success"] = "Xóa kho hàng thành công!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                var inventory = await _service.GetInventoryByIdAsync(id);
+                if (inventory == null) return NotFound();
+
+                ViewBag.CanDelete = false;
+                ViewBag.ErrorMessage = ex.Message;
+                return View(inventory);
+            }
         }
     }
 }

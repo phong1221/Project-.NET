@@ -2,9 +2,17 @@
 @{ ViewData["Title"] = "Xóa kho"; }
 
 <h2>Xóa kho</h2>
-<div class="alert alert-danger">
-    <h4>Bạn có chắc chắn muốn xóa bản ghi kho này?</h4>
-    <hr />
+<div class="alert @((ViewBag.CanDelete == false) ? "alert-warning" : "alert-danger")">
+    @if (ViewBag.CanDelete == false)
+    {
+        <h4 class="text-danger">@ViewBag.ErrorMessage</h4>
+        <hr />
+    }
+    else
+    {
+        <h4>Bạn có chắc chắn muốn xóa bản ghi kho này?</h4>
+        <hr />
+    }
     <dl class="row">
         <dt class="col-sm-3">Sản phẩm:</dt>
         <dd class="col-sm-9">@Model.Product?.ProductName</dd>
@@ -12,7 +20,10 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="InventoryId" />
-        <button type="submit" class="btn btn-danger">Xóa</button>
+        @if (ViewBag.CanDelete == null || (bool)ViewBag.CanDelete == true)
+        {
+            <button type="submit" class="btn btn-danger">Xóa</button>
+        }
         <a asp-action="Index" class="btn btn-secondary">Hủy</a>
     </form>
 </div>

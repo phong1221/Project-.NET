@@ -28,7 +28,14 @@ namespace StoreManagement.Web.Controllers
             {
                 Products = await _productService.GetAllProductsAsync(),
                 Customers = await _customerService.GetAllCustomersAsync(),
-                Categories = await _categoryService.GetAllCategoriesAsync()
+                Categories = await _categoryService.GetAllCategoriesAsync(),
+                PaymentMethods = new Dictionary<string, string>
+                {
+                    { "cash", "Tiền mặt" },
+                    { "card", "Thẻ tín dụng / Ghi nợ" },
+                    { "bank_transfer", "Chuyển khoản" },
+                    { "e-wallet", "Ví điện tử" }
+                }
             };
             return View(viewModel);
         }

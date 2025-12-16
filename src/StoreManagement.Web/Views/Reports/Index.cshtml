@@ -144,17 +144,42 @@
         // Payment Method Chart
         var ctxPay = document.getElementById("paymentChart").getContext('2d');
         var paymentChart = new Chart(ctxPay, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: @Html.Raw(Json.Serialize(ViewBag.MethodLabels)),
                 datasets: [{
                     data: @Html.Raw(Json.Serialize(ViewBag.MethodValues)),
-                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    hoverOffset: 15
                 }],
             },
             options: {
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
+                layout: {
+                    padding: 10
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                         callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' đơn';
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
             }
         });
     </script>
