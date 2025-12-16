@@ -65,6 +65,11 @@ namespace StoreManagement.Services.Implementations
 
         public async Task DeleteInventoryAsync(int id)
         {
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing != null && existing.Quantity > 0)
+            {
+                throw new InvalidOperationException("Không thể xóa kho hàng khi số lượng tồn kho lớn hơn 0.");
+            }
             await _repository.DeleteAsync(id);
         }
 

@@ -115,7 +115,6 @@ D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\scopedcss\Views\Shar
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\scopedcss\bundle\StoreManagement.Web.styles.css
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\scopedcss\projectbundle\StoreManagement.Web.bundle.scp.css
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\compressed\ldqsbca4i7-61n19gt1b8.gz
-D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\compressed\jy5up8ek78-xtxxf3hu2r.gz
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\compressed\9ssk3rhvqx-bqjiyaj88i.gz
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\compressed\pqsh7pcdax-c2jlpeoesf.gz
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\compressed\a25zdqrs0q-erw9l3u2r3.gz
@@ -189,3 +188,4 @@ D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\StoreManagement.Web.
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\ref\StoreManagement.Web.dll
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\compressed\r5tjzjsnkq-onnycnzak3.gz
 D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\StoreManagement.Web.sourcelink.json
+D:\StoreManagement\src\StoreManagement.Web\obj\Debug\net9.0\compressed\jy5up8ek78-20l09kswyr.gz

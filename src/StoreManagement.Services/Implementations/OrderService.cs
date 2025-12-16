@@ -34,18 +34,32 @@ namespace StoreManagement.Services.Implementations
 
                     // Check inventory logic handled here or separately. For simplicity, we just check quantity.
                     var inventory = await _context.Inventories.FirstOrDefaultAsync(i => i.ProductId == item.productId);
+                    
+                    // If no inventory record exists, treat as 0 quantity
+                    int currentStock = inventory?.Quantity ?? 0;
+
+                    if (currentStock < item.quantity) 
+                    {
+                        throw new Exception($"Sản phẩm '{product.ProductName}' không đủ hàng trong kho (Còn: {currentStock}). Vui lòng nhập thêm hàng.");
+                    }
+
                     if (inventory != null)
                     {
-                         if(inventory.Quantity < item.quantity) throw new Exception($"Product {product.ProductName} not enough stock");
                          inventory.Quantity -= item.quantity;
                          _context.Inventories.Update(inventory);
                     }
-                    else 
+                    else
                     {
-                         // Or create negative inventory if allowed, or throw error.
-                         // For now, let's assume if no inventory record, we create one with negative or just ignore for non-stock items.
-                         // We'll throw for safety.
-                         throw new Exception($"Product {product.ProductName} inventory not found");
+                        // Should technically create a record if we allowed negative stock, but we blocked it above.
+                        // So this block is unreachable unless we allow backorders.
+                        // But for safety/future proofing:
+                        inventory = new Inventory 
+                        { 
+                            ProductId = item.productId, 
+                            Quantity = -item.quantity, // If we allowed it to pass
+                            UpdatedAt = DateTime.Now 
+                        };
+                         _context.Inventories.Add(inventory);
                     }
 
                     var subtotal = product.Price * item.quantity;

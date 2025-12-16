@@ -65,13 +65,32 @@ namespace StoreManagement.Web.Controllers
             ViewBag.TopProdValues = topProducts.Select(x => x.Qty).ToList();
 
             // 4. Chart: Payment Methods
-            var methods = await _context.Payments
+            // 4. Chart: Payment Methods
+            var rawMethods = await _context.Payments
                 .GroupBy(p => p.PaymentMethod)
                 .Select(g => new { Method = g.Key, Count = g.Count() })
                 .ToListAsync();
             
-            ViewBag.MethodLabels = methods.Select(x => x.Method).ToList();
-            ViewBag.MethodValues = methods.Select(x => x.Count).ToList();
+            var methodDict = new Dictionary<string, string> 
+            {
+                { "cash", "Tiền mặt" },
+                { "card", "Thẻ tín dụng / Ghi nợ" },
+                { "bank_transfer", "Chuyển khoản" },
+                { "e-wallet", "Ví điện tử" }
+            };
+
+            var processedMethods = new List<string>();
+            var processedCounts = new List<int>();
+
+            foreach(var kvp in methodDict)
+            {
+                processedMethods.Add(kvp.Value);
+                var record = rawMethods.FirstOrDefault(rm => rm.Method == kvp.Key);
+                processedCounts.Add(record?.Count ?? 0);
+            }
+            
+            ViewBag.MethodLabels = processedMethods;
+            ViewBag.MethodValues = processedCounts;
 
             return View();
         }
